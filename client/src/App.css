@@ -48,9 +48,29 @@
   background-color: #f1f1f1;
 }
 .sidebar-nav{
+  font-family: "Karla", sans-serif;
+  font-size:18px;
   padding: 7px;
   display: flex;
   align-items: center;
+
+}
+.add-icon{
+  cursor: pointer;
+}
+
+/*Widok dla pojedynczego pliku*/
+.file-selected,
+.file{
+ cursor: pointer;
+}
+.file-selected{
+  background-color: rgb(114, 114, 227);
+}
+.one-file{
+  display:flex;
+  align-items: center;
+  padding:7px;
 }
 
 
