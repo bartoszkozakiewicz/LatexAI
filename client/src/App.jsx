@@ -100,7 +100,8 @@ function App() {
         {review? 
         
           <Split
-          sizes={[20,80]}
+          // sizes={[20,80]}
+          minSize={[150,1000]}
           direction="horizontal"
           className="split"
           >
@@ -118,9 +119,10 @@ function App() {
               />
 
               <Split
-              sizes={[60,40]}
+              // sizes={[60,40]}
+              minSize={[500,200]}
               direction="horizontal"
-              className="split2">
+              className="split">
                 <Editor 
                   updateCode={updateCode}
                   currentCode={currentCode}
@@ -135,6 +137,7 @@ function App() {
         : 
           <Split
             sizes={[20, 80]}
+            minSize={[150,500]}
             direction="horizontal"
             className="split"
           >

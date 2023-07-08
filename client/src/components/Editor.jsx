@@ -7,6 +7,12 @@ import axios from 'axios';
 
 export default function Editor(props){
 
+    const onLoad = (editor) => {
+        editor.setOptions({
+          enableBasicAutocompletion: true,
+          enableLiveAutocompletion: true
+        });
+    }
 
     async function generatePDF(){
         try {
@@ -41,6 +47,7 @@ export default function Editor(props){
                     $blockScrolling: true, 
                 }}
                 style={{width: '100%',  height: '90%' }}
+                onLoad={onLoad}
             />
         </div>
     )
