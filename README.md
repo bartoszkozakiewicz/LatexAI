@@ -1,0 +1,2 @@
+# LatexAI
+Hackathon Project
