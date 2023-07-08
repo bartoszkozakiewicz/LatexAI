@@ -1,5 +1,13 @@
-#root {
-  width: 100vw;
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Karla', sans-serif;
+  overflow: hidden;
+}
+html {
   margin: 0 auto;
   /*padding: 2rem;*/
   text-align: center;
@@ -8,15 +16,16 @@
 
 .main-container{
   display: flex;
-  width: 90%;
-  height: 100vh;
+  width: 100%;
+  height: 98vh;
 }
                 /* SPLIT AREA */
 .split {
   display: flex;
-  width: 90%;
-  height: 100vh;
+  width: 100%; 
+  /* margin: 0 auto;  */
 }
+
 .gutter {
   background-color: #eee;
 
@@ -34,7 +43,7 @@
 
 
 
-                /* NAVBAR */
+                  /* NAVBAR */
 .navigation{
   background-color: rgba(150, 150, 254, 0.489);
   font-family: "Karla", sans-serif;
@@ -43,9 +52,10 @@
   padding:10px;
 }
 
-                /* SIDEBAR */
+                  /* SIDEBAR */
 .sidebar{
   background-color: #f1f1f1;
+  overflow-y: scroll; 
 }
 .sidebar-nav{
   font-family: "Karla", sans-serif;
@@ -74,13 +84,13 @@
 }
 
 
-                /* EDYTOR */
+                  /* EDYTOR */
 .editor{
   display: flex;
   flex-direction: column;
   width: 90%;
   height: 90%;
-  background-color: red;
+  background-color: #d4caca7f;
 }
 .latexEditor{  
   border: 1px solid gray;

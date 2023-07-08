@@ -20,7 +20,7 @@ export default function Sidebar(props){
             <div className="one-file">
 
                 {code.isEdit? 
-                    <input className="edit-input"
+                    <input style={{marginRight:'auto'}} className="edit-input"
                     type="text" 
                     onChange={(event)=>handleChange(event,code.id)}
                     value={code.name}

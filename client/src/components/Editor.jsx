@@ -7,16 +7,10 @@ import axios from 'axios';
 
 export default function Editor(props){
 
-    const [text, setText] = React.useState('')
-
-    // function handleChange(newText){
-    //     setText(newText)
-    //     console.log(text)
-    // }
 
     async function generatePDF(){
         try {
-            const response = await axios.post('/api/compile',  { latexText: text });
+            const response = await axios.post('/api/compile',  { latexText: props.currentCode.code });
             const fileURL = response.data.fileURL;
             console.log('PDF generated successfully:', fileURL);
             // Wyświetl link do pobrania wygenerowanego pliku PDF
@@ -26,14 +20,15 @@ export default function Editor(props){
         };
 
     function generateReview(){
-        console.log('review')
+        props.setReview(prevReview=>!prevReview)
+        console.log(props.review)
     }
 
     return (
         <div className='editor'>
             <nav className="editor-nav">
                 <p className='nav-title'>Editor</p>
-                <button className='nav-button' onClick={generateReview}>Review</button>
+                <button className='nav-button' onClick={generateReview}>{props.review ? "Hide Review" : "Review"}</button>
                 <button className='nav-button' onClick={generatePDF}>Compile</button>
             </nav>
             <AceEditor 
