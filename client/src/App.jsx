@@ -13,10 +13,26 @@ import axios from 'axios';
 
 
 function App() {
-  const [allFolders, setAllFolders] = useState([]) //In case of folders creating
-  const [allCode, setAllCode] = useState([])
+  const [allCode, setAllCode] = useState([
+    {
+      id: nanoid(), 
+      code: "\\documentclass{article} \n\n \\end{document}",
+      name: "example code 1",
+      isEdit:false
+    },
+    {
+      id: nanoid(), 
+      code: "\\documentclass{article} \n\n \\end{document}",
+      name: "example code 2",
+      isEdit:false
+    }
+  ])
   const [currentCodeId, setCurrentCodeId] = useState(allCode[0] && allCode[0].id || '')
   const [review, setReview] = React.useState(false)
+
+  //autocomplete
+  const [display,setDisplay] = useState(false)//display autocomplete propose?
+  const [options,setOptions] = useState([]) //given options
 
 
   //Function to append new Latex code
@@ -51,9 +67,6 @@ function App() {
     console.log(currentCode.code)
   }
 
-  //end
-
-
 
   //Function to find current code
   const currentCode = allCode.find(code=> code.id === currentCodeId) || 0
@@ -82,8 +95,14 @@ function App() {
   
   //end
 
+
   //Function to propose autocompletion:
   async function proposeChanges(){
+    setOptions(['propozycja 1','propozycja 2'])
+
+    currentCode.code ? 
+    setDisplay(true):
+    setDisplay(false)
     // Add post here
     console.log("propozycja")
     try {
@@ -94,8 +113,8 @@ function App() {
     } catch (error) {
       console.error('Error generating PDF:', error);
     }
-
   }
+  
   React.useEffect(()=>{
     const timeoutId = setTimeout(()=> {
       proposeChanges()
@@ -103,6 +122,12 @@ function App() {
     return ()=>clearTimeout(timeoutId)
   },[currentCode.code])
 
+  //end
+
+  //Hide proposals after user starts to write
+  React.useEffect(()=>{
+    setDisplay(false)
+  },[currentCode.code])
 
   return (
     <>
@@ -111,7 +136,8 @@ function App() {
         {review? 
         
           <Split
-          sizes={[20,80]}
+          // sizes={[20,80]}
+          minSize={[150,1000]}
           direction="horizontal"
           className="split"
           >
@@ -129,14 +155,21 @@ function App() {
               />
 
               <Split
-              sizes={[60,40]}
+              // sizes={[60,40]}
+              minSize={[500,200]}
               direction="horizontal"
               className="split">
                 <Editor 
+                  allCode={allCode}
+                  setAllCode={setAllCode}
                   updateCode={updateCode}
                   currentCode={currentCode}
+                  currentCodeId={currentCodeId}
                   setReview={setReview}
                   review={review}
+                  display={display}
+                  setDisplay={setDisplay}
+                  options={options}
                 />
                 <Review/>
               </Split>
@@ -146,6 +179,7 @@ function App() {
         : 
           <Split
             sizes={[20, 80]}
+            minSize={[150,500]}
             direction="horizontal"
             className="split"
           >
@@ -162,10 +196,16 @@ function App() {
               setCurrentCodeId={setCurrentCodeId}
             />
             <Editor 
+              allCode={allCode}
+              setAllCode={setAllCode}
               updateCode={updateCode}
               currentCode={currentCode}
+              currentCodeId={currentCodeId}
               setReview={setReview}
               review={review}
+              display={display}
+              setDisplay={setDisplay}
+              options={options}
             />
           </Split>
         }
