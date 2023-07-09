@@ -29,21 +29,31 @@ app.add_middleware(
 @app.post("/api/bibliography")
 async def read_item(info: Request):
         data = await info.json()
-        search = arxiv.Search(query = "dcgan", max_results = 3)
+        data = data['latexText']
+        data = delete_latex_from_string(data)
+        # data = data.replace('\n', '.')
+        data = data.split('.')[-1]
+        # data should be short (1-2 sentences)
+        print('='*50, data, '='*50)
+        search = arxiv.Search(query=data, max_results=3)
         citations = []
+
+        doi = None
+        citation = None
+        summary = None
+        title = None
         for result in search.results():
             index = result.pdf_url.index('pdf/')
             doi = result.pdf_url[index + 4:]
+            title = result.title
             summary = result.summary
             citation = subprocess.run(['arxiv2bib', doi], stdout=subprocess.PIPE)
             citation = citation.stdout.decode('utf-8')
             citations.append(citation)
-        print('='*80)
-        print(result.title, doi)
-        print('---')
-        print(citation)
+            break
 
-        return {citation}
+
+        return {'doi': doi, 'citation': citation, 'summary': summary, 'title': title}
       
       
 @app.post("/api/review")
@@ -176,10 +186,10 @@ async def read_item(info: Request):
     print(data)
 
     parameters = {
-        "temperature": 0.8,
+        "temperature": 0.0,
         "max_output_tokens": 10,
         "top_p": 0.8,
-        "top_k": 40
+        "top_k": 1
     }
     model = TextGenerationModel.from_pretrained("text-bison@001")
     response = model.predict(
