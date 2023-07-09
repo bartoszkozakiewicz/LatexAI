@@ -11,6 +11,9 @@ export default function Editor(props){
     const overlayRef = React.useRef(null);
     const [cursorPos, setCursorPos] = React.useState({ x: 10, y: 0.0 });
     const [bibliography,setBibliography] = React.useState("")
+    const [citation,setCitation] = React.useState("")
+    const [doi,setDoi] = React.useState("")
+ 
 
     async function generatePDF(){
         try {
@@ -50,37 +53,60 @@ export default function Editor(props){
 
           const textToSend = props.currentCode.code.substring(0,index)
           console.log(textToSend)
-          setBibliography(textToSend)
+          // setBibliography(textToSend)
           props.setDisplayBibliography(prevBiblio=>!prevBiblio)
 
-          // try {
-          //   const response = await axios.post('/api/bibliography', {latexText: textToSend})
-          //   console.log(response.data[0])
-          // }
-          // catch(error){
-          //   console.error('Searching for bibliography:',error)
-          // }
+          try {
+            const response = await axios.post('/api/bibliography', {latexText: textToSend})
+            console.log(response.data)
+            if (response.data.summary === null) {
+              setBibliography("Matching bibliography was not found")
+            }
+            else {
+              setBibliography(response.data.summary)
+              setCitation(response.data.citation)
+              setDoi(response.data.doi)
+            }
+              
+          }
+          catch(error){
+            console.error('Searching for bibliography:',error)
+          }
+          
           }
 
           function addBibliography() {
+            const editor = overlayRef.current.editor;
+            const cursorPosition = editor.getCursorPosition();
+            const index = editor.session.getDocument().positionToIndex(cursorPosition, 0);
+            const textToSend = props.currentCode.code.substring(0,index)+` \\cite{${doi}} `+props.currentCode.code.substring(index)
+            props.setAllCode(prevAllCode => 
+              prevAllCode.map(ele =>
+                ele.id === props.currentCode.id
+                ? {
+                  ...ele,
+                  code: textToSend
+                }: ele
+              )
+            );
+
             if (props.allCode.some(code => code.name === "bibliography")) {
               props.setAllCode(prevAllCode =>
                 prevAllCode.map(ele =>
                   ele.name === "bibliography"
                     ? {
                         ...ele,
-                        code: ele.code +"\n\n" + bibliography
+                        code: ele.code +"\n\n" + citation
                       }
                     : ele
                 )
               );
             } else {
-              console.log("add", bibliography);
               props.setAllCode(prevAllCode => [
                 ...prevAllCode,
                 {
                   id: nanoid(),
-                  code: bibliography, // {bibliography}
+                  code: citation, // {bibliography}
                   name: "bibliography",
                   isEdit: false
                 }
@@ -90,6 +116,7 @@ export default function Editor(props){
           }
           
         function ignoreBibliography(){
+          setBibliography("")
           props.setDisplayBibliography(prevBiblio=>!prevBiblio)
         }
 
@@ -197,7 +224,7 @@ export default function Editor(props){
               />
               {props.displayBibliography?
               <div className="biblio-container">
-                <div className="bibliography" style={{position:'absolute'}}> zadanie otsdfsdfsdfsdifhubasdufhahsdufhbaisdufhbasidufhbaisduhfbaisduhfbmującej zwykle od kilku do</div>
+                <div className="bibliography" style={{position:'absolute'}}>{bibliography}</div>
                 <div className="biblio-buttons">
                   <button className='nav-button' onClick={addBibliography}>Add</button>
                   <button className='nav-button' onClick={ignoreBibliography}>Ignore</button>

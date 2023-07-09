@@ -173,7 +173,8 @@ html {
   position: absolute;
   top:20px;
   right:20px;
-  max-width: 200px;
+  max-width: 500px;
+  min-width: 400px;
   word-wrap: break-word;
   color:white;
   background-color: #0087FF;
