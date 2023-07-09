@@ -95,35 +95,6 @@ function App() {
   
   //end
 
-
-  //Function to propose autocompletion:
-  async function proposeChanges(){
-    setOptions(['propozycja 1','propozycja 2'])
-
-    currentCode.code ? 
-    setDisplay(true):
-    setDisplay(false)
-    // Add post here
-    console.log("propozycja")
-    try {
-      const response = await axios.post('/api/autocomplete',  { latexText: currentCode.code });
-      const fileURL = response.data.fileURL;
-      console.log('PDF generated successfully:', fileURL);
-      // Wyświetl link do pobrania wygenerowanego pliku PDF
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-    }
-  }
-  
-  React.useEffect(()=>{
-    const timeoutId = setTimeout(()=> {
-      proposeChanges()
-    }, 1000)
-    return ()=>clearTimeout(timeoutId)
-  },[currentCode.code])
-
-  //end
-
   //Hide proposals after user starts to write
   React.useEffect(()=>{
     setDisplay(false)
@@ -170,6 +141,7 @@ function App() {
                   display={display}
                   setDisplay={setDisplay}
                   options={options}
+                  setOptions={setOptions}
                 />
                 <Review/>
               </Split>
@@ -206,6 +178,7 @@ function App() {
               display={display}
               setDisplay={setDisplay}
               options={options}
+              setOptions={setOptions}
             />
           </Split>
         }

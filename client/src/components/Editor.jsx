@@ -36,6 +36,40 @@ export default function Editor(props){
             }
         }
         };
+    
+          //Function to propose autocompletion:
+    async function proposeChanges(){
+
+        props.setOptions(['propozycja 1','propozycja 2'])
+        props.currentCode.code ? 
+        props.setDisplay(true):
+        props.setDisplay(false)
+
+        const editor = overlayRef.current.editor;
+        const cursorPosition = editor.getCursorPosition();
+        const index = editor.session.getDocument().positionToIndex(cursorPosition, 0);
+
+        console.log("index",index);    
+        const textToSend = props.currentCode.code.substring(0,index)+"XXX"+props.currentCode.code.substring(index)
+        console.log(textToSend) 
+
+        // Add post here
+        console.log("propozycja")
+        try {
+        const response = await axios.post('/api/autocomplete',  { latexText: textToSend});
+        const fileURL = response.data.fileURL;
+        console.log('PDF generated successfully:', fileURL);
+        // Wyświetl link do pobrania wygenerowanego pliku PDF
+        } catch (error) {
+        console.error('Error generating PDF:', error);
+        }
+    }
+    React.useEffect(()=>{
+        const timeoutId = setTimeout(()=> {
+          proposeChanges()
+        }, 1000)
+        return ()=>clearTimeout(timeoutId)
+      },[props.currentCode.code])
         
         
 
@@ -62,7 +96,7 @@ export default function Editor(props){
         const editor = overlayRef.current.editor;
         const currentPosition = editor.getCursorPosition();
         await editor.session.insert(currentPosition, code);
-
+        console.log(currentPosition)
         // const newCode = props.allCode.map(prevCode => {
         //   if (prevCode.id === props.currentCodeId) {
         //     return { ...prevCode, code: prevCode.code + code };

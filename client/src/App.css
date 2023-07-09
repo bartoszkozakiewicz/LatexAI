@@ -61,7 +61,7 @@ html {
 
                   /* SIDEBAR */
 .sidebar{
-  background-color: #f1f1f1;
+  background-color: #F9F8FF;/*#f1f1f1*/
   overflow-y: scroll; 
 }
 .sidebar-nav{
@@ -97,7 +97,7 @@ html {
   flex-direction: column;
   width: 90%;
   height: 90%;
-  background-color: #d4caca7f;
+  background-color: #F9F8FF; /*#d4caca7f*/
 }
 .latexEditor{  
   border: 1px solid gray;
@@ -134,6 +134,7 @@ html {
   background-color: #0087FF;
   border-radius: 2px;
   opacity: 0.85;
+  color: white;
 }
 
 /* REVIEW */
@@ -141,6 +142,7 @@ html {
 .review-container{
   display:flex;
   flex-direction: column;
+  background-color: #F9F8FF;
 }
 .review-content{
   font-size: 14px;
