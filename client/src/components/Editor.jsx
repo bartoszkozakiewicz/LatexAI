@@ -124,7 +124,7 @@ export default function Editor(props){
     React.useEffect(()=>{
         const timeoutId = setTimeout(()=> {
           proposeChanges()
-        }, 1000)
+        }, 100)
         return ()=>clearTimeout(timeoutId)
       },[props.currentCode.code])
         

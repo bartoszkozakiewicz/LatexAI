@@ -7,6 +7,10 @@
 from google.cloud import aiplatform
 import vertexai
 from vertexai.language_models import TextGenerationModel
+from collections import Counter
+import pandas as pd 
+from nltk.tokenize import word_tokenize
+import re
 
 aiplatform.init(
     # your Google Cloud Project ID or number
@@ -38,4 +42,16 @@ aiplatform.init(
 )
 
 vertexai.init(project="lively-ace-392206", location="us-central1")
+
+def delete_latex_from_string(string):
+    string = '\n'.join([re.sub('^\s+', '', s) for s in string.split('\n')])
+    string = '\n'.join([s for s in string.split('\n') if not s.startswith('\\') and not s.startswith('%')])
+    return string
+
+with open('example_article.txt', 'r') as f:
+        word_freq = f.read().lower()
+        word_freq = delete_latex_from_string(word_freq).split()
+        word_freq = Counter(word_freq)
+examples_df = pd.Series(dict(word_freq)).rename('example_freq').to_frame()
+examples_df['example_freq'] = examples_df['example_freq'] / examples_df['example_freq'].sum()
 
