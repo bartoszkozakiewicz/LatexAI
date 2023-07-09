@@ -1,14 +1,15 @@
 import { useState } from 'react'
 import React from "react"
 import Split from 'react-split';
-import SplitPane, { Pane } from 'split-pane-react';
-import 'split-pane-react/esm/themes/default.css'
+// import SplitPane, { Pane } from 'split-pane-react';
+// import 'split-pane-react/esm/themes/default.css'
 import './App.css'
 import Editor from './components/Editor'
 import Sidebar from './components/Sidebar'
 import Review from './components/Review'
 import Navbar from './components/Navbar'
 import {nanoid} from "nanoid"
+import axios from 'axios';
 
 
 function App() {
@@ -81,9 +82,19 @@ function App() {
   
   //end
 
-  //Function to propose grammar changes:
-  function proposeChanges(){
+  //Function to propose autocompletion:
+  async function proposeChanges(){
+    // Add post here
     console.log("propozycja")
+    try {
+      const response = await axios.post('/api/autocomplete',  { latexText: currentCode.code });
+      const fileURL = response.data.fileURL;
+      console.log('PDF generated successfully:', fileURL);
+      // Wyświetl link do pobrania wygenerowanego pliku PDF
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    }
+
   }
   React.useEffect(()=>{
     const timeoutId = setTimeout(()=> {
@@ -120,7 +131,7 @@ function App() {
               <Split
               sizes={[60,40]}
               direction="horizontal"
-              className="split2">
+              className="split">
                 <Editor 
                   updateCode={updateCode}
                   currentCode={currentCode}
