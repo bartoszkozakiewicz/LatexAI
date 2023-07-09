@@ -3,13 +3,14 @@ import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/mode-latex';
 import 'ace-builds/src-noconflict/theme-github';
 import axios from 'axios';
-import { GrammarlyEditorPlugin } from "@grammarly/editor-sdk-react";
+import {nanoid} from "nanoid"
 
 
 export default function Editor(props){
 
     const overlayRef = React.useRef(null);
     const [cursorPos, setCursorPos] = React.useState({ x: 10, y: 0.0 });
+    const [bibliography,setBibliography] = React.useState("")
 
     async function generatePDF(){
         try {
@@ -23,6 +24,7 @@ export default function Editor(props){
         };
 
     async function generateReview(){
+        props.setLoading(false)
         props.setReview(prevReview=>!prevReview)
         console.log(props.review)
         if (!props.review) {
@@ -32,17 +34,68 @@ export default function Editor(props){
                 const fileURL = response.data.review;
                 props.setReviewContent(response.data.final_response)
                 console.log('Review generated successfully:', fileURL);
+                props.setLoading(true)
                 // Wyświetl link do pobrania wygenerowanego pliku PDF
             } catch (error) {
                 console.error('Review generating PDF:', error);
             }
         }
         };
-    
+
+        async function generateBibliography(){
+          console.log("Bibliografia")
+          const editor = overlayRef.current.editor;
+          const cursorPosition = editor.getCursorPosition();
+          const index = editor.session.getDocument().positionToIndex(cursorPosition, 0);
+
+          const textToSend = props.currentCode.code.substring(0,index)
+          console.log(textToSend)
+          setBibliography(textToSend)
+          props.setDisplayBibliography(prevBiblio=>!prevBiblio)
+
+          // try {
+          //   const response = await axios.post('/api/bibliography', {latexText: textToSend})
+          //   console.log(response.data[0])
+          // }
+          // catch(error){
+          //   console.error('Searching for bibliography:',error)
+          // }
+          }
+
+          function addBibliography() {
+            if (props.allCode.some(code => code.name === "bibliography")) {
+              props.setAllCode(prevAllCode =>
+                prevAllCode.map(ele =>
+                  ele.name === "bibliography"
+                    ? {
+                        ...ele,
+                        code: ele.code +"\n\n" + bibliography
+                      }
+                    : ele
+                )
+              );
+            } else {
+              console.log("add", bibliography);
+              props.setAllCode(prevAllCode => [
+                ...prevAllCode,
+                {
+                  id: nanoid(),
+                  code: bibliography, // {bibliography}
+                  name: "bibliography",
+                  isEdit: false
+                }
+              ]);
+            }
+            ignoreBibliography()
+          }
+          
+        function ignoreBibliography(){
+          props.setDisplayBibliography(prevBiblio=>!prevBiblio)
+        }
+
+
           //Function to propose autocompletion:
     async function proposeChanges(){
-
-
 
         const editor = overlayRef.current.editor;
         const cursorPosition = editor.getCursorPosition();
@@ -102,20 +155,12 @@ export default function Editor(props){
         const currentPosition = editor.getCursorPosition();
         await editor.session.insert(currentPosition, code);
         console.log(currentPosition)
-        // const newCode = props.allCode.map(prevCode => {
-        //   if (prevCode.id === props.currentCodeId) {
-        //     return { ...prevCode, code: prevCode.code + code };
-        //   }
-        //   return prevCode;
-        // });
 
         props.setDisplay(false)
-        //await props.setAllCode(props.allCode)
-        // editor.navigateFileEnd()
         console.log(props.allCode)
         editor.focus()
       }
-  
+
     //end
 
       //Dynamic position
@@ -130,22 +175,40 @@ export default function Editor(props){
         <div className='editor'>
             <nav className="editor-nav">
                 <p className='nav-title'>Editor</p>
+                <button className='nav-button' onClick={generateBibliography}>Bibliography</button>
                 <button className='nav-button' onClick={generateReview}>{props.review ? "Hide Review" : "Review"}</button>
                 <button className='nav-button' onClick={generatePDF}>Compile</button>
             </nav>
-            <AceEditor 
-                ref={overlayRef}
-                className="latexEditor"
-                mode="latex"
-                value={props.currentCode.code}
-                name="latex-editor"
-                wrap={true}
-                onChange={props.updateCode}
-                editorProps={{
-                    $blockScrolling: true, 
-                }}
-                style={{width: '100%',  height: '90%' }}
-            />
+            <div className="edit-biblio-container">
+              <AceEditor 
+                  ref={overlayRef}
+                  className="latexEditor"
+                  mode="latex"
+                  value={props.currentCode.code}
+                  name="latex-editor"
+                  wrap={true}
+
+                  onChange={props.updateCode}
+                  wrapEnabled={true} // Włącz zawijanie tekstu
+                  editorProps={{
+                      $blockScrolling: Infinity,
+                    }}
+                  style={{width: '100%',  height: '100%' }}
+              />
+              {props.displayBibliography?
+              <div className="biblio-container">
+                <div className="bibliography" style={{position:'absolute'}}> zadanie otsdfsdfsdfsdifhubasdufhahsdufhbaisdufhbasidufhbaisduhfbaisduhfbmującej zwykle od kilku do</div>
+                <div className="biblio-buttons">
+                  <button className='nav-button' onClick={addBibliography}>Add</button>
+                  <button className='nav-button' onClick={ignoreBibliography}>Ignore</button>
+                </div>
+              </div>
+
+              :null
+              }
+
+            </div>
+
             {props.display && (
                 <div style={styles}>
                     {props.options.map((val,idx)=>{

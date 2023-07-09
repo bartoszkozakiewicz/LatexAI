@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "fs-extra": "^11.1.1",
-    "latex": "^0.0.1"
+    "latex": "^0.0.1",
+    "react-spinners": "^0.13.8"
   }
 }
