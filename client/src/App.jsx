@@ -1,15 +1,13 @@
 import { useState } from 'react'
 import React from "react"
 import Split from 'react-split';
-// import SplitPane, { Pane } from 'split-pane-react';
-// import 'split-pane-react/esm/themes/default.css'
 import './App.css'
 import Editor from './components/Editor'
 import Sidebar from './components/Sidebar'
 import Review from './components/Review'
 import Navbar from './components/Navbar'
 import {nanoid} from "nanoid"
-import axios from 'axios';
+
 
 
 function App() {
@@ -30,6 +28,7 @@ function App() {
   const [currentCodeId, setCurrentCodeId] = useState(allCode[0] && allCode[0].id || '')
   const [review, setReview] = React.useState(false)
   const [reviewContent, setReviewContent] = React.useState("")
+  const [loading, setLoading] =React.useState(false) //review loading
 
 
   //autocomplete
@@ -146,8 +145,9 @@ function App() {
                   setOptions={setOptions}
                   reviewContent={reviewContent}
                   setReviewContent={setReviewContent}
+                  setLoading={setLoading}
                 />
-              <Review reviewContent={reviewContent}/>
+              <Review reviewContent={reviewContent} loading={loading}/>
               </Split>
 
           </Split>
@@ -185,6 +185,7 @@ function App() {
               setDisplay={setDisplay}
               options={options}
               setOptions={setOptions}
+              setLoading={setLoading}
             />
           </Split>
         }

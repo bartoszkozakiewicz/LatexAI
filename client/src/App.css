@@ -83,6 +83,7 @@ html {
 }
 .file-selected{
   background-color: #0087FF;
+  color:white;
 }
 .one-file{
   display:flex;
@@ -146,7 +147,18 @@ html {
 }
 .review-content{
   font-size: 14px;
+  text-align: justify;
+  margin-left:20px;
+  padding:10px;
 }
+
 .review-points{
   text-align: left;
+}
+/*Loading*/
+.loading-panel{
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top:50px;
 }

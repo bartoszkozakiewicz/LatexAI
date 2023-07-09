@@ -22,6 +22,7 @@ export default function Editor(props){
         };
 
     async function generateReview(){
+        props.setLoading(false)
         props.setReview(prevReview=>!prevReview)
         console.log(props.review)
         if (!props.review) {
@@ -31,6 +32,7 @@ export default function Editor(props){
                 const fileURL = response.data.review;
                 props.setReviewContent(response.data.final_response)
                 console.log('Review generated successfully:', fileURL);
+                props.setLoading(true)
                 // Wyświetl link do pobrania wygenerowanego pliku PDF
             } catch (error) {
                 console.error('Review generating PDF:', error);
@@ -80,6 +82,7 @@ export default function Editor(props){
         const editor = overlayRef.current.editor;
     
         const handleCursorPosition = (e) => {
+          props.setDisplay(false)
           const cursorPosition = editor.getCursorPosition();
           const cursorCoords = editor.renderer.textToScreenCoordinates(cursorPosition.row, cursorPosition.column);
           setCursorPos({x:cursorCoords.pageX,y:cursorCoords.pageY})
@@ -138,9 +141,10 @@ export default function Editor(props){
                 value={props.currentCode.code}
                 name="latex-editor"
                 onChange={props.updateCode}
+                wrapEnabled={true} // Włącz zawijanie tekstu
                 editorProps={{
-                    $blockScrolling: true, 
-                }}
+                    $blockScrolling: Infinity,
+                   }}
                 style={{width: '100%',  height: '90%' }}
             />
             {props.display && (
