@@ -29,6 +29,7 @@ export default function Editor(props){
                 // props.currentCode.code is the currently active (visible) code
                 const response = await axios.post('/api/review',  { latexText: props.currentCode.code });
                 const fileURL = response.data.review;
+                props.setReviewContent(response.data.final_response)
                 console.log('Review generated successfully:', fileURL);
                 // Wyświetl link do pobrania wygenerowanego pliku PDF
             } catch (error) {
@@ -40,10 +41,7 @@ export default function Editor(props){
           //Function to propose autocompletion:
     async function proposeChanges(){
 
-        props.setOptions(['propozycja 1','propozycja 2'])
-        props.currentCode.code ? 
-        props.setDisplay(true):
-        props.setDisplay(false)
+
 
         const editor = overlayRef.current.editor;
         const cursorPosition = editor.getCursorPosition();
@@ -59,6 +57,11 @@ export default function Editor(props){
         const response = await axios.post('/api/autocomplete',  { latexText: textToSend});
         const fileURL = response.data.fileURL;
         console.log('PDF generated successfully:', fileURL);
+        props.setOptions([response.data.final_response])
+        props.currentCode.code ? 
+        props.setDisplay(true):
+        props.setDisplay(false)
+
         // Wyświetl link do pobrania wygenerowanego pliku PDF
         } catch (error) {
         console.error('Error generating PDF:', error);

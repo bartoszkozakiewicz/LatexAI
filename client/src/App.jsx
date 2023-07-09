@@ -29,6 +29,8 @@ function App() {
   ])
   const [currentCodeId, setCurrentCodeId] = useState(allCode[0] && allCode[0].id || '')
   const [review, setReview] = React.useState(false)
+  const [reviewContent, setReviewContent] = React.useState("")
+
 
   //autocomplete
   const [display,setDisplay] = useState(false)//display autocomplete propose?
@@ -142,8 +144,10 @@ function App() {
                   setDisplay={setDisplay}
                   options={options}
                   setOptions={setOptions}
+                  reviewContent={reviewContent}
+                  setReviewContent={setReviewContent}
                 />
-                <Review/>
+              <Review reviewContent={reviewContent}/>
               </Split>
 
           </Split>
@@ -174,6 +178,8 @@ function App() {
               currentCode={currentCode}
               currentCodeId={currentCodeId}
               setReview={setReview}
+              reviewContent={reviewContent}
+              setReviewContent={setReviewContent}
               review={review}
               display={display}
               setDisplay={setDisplay}
