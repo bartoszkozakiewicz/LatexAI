@@ -162,3 +162,40 @@ html {
   align-items: center;
   margin-top:50px;
 }
+
+                          /* BIBLIOGRAFIA */
+.edit-biblio-container{
+  position: relative;
+  width: 100%;
+  height: 100vh;
+} 
+.biblio-container{
+  position: absolute;
+  top:20px;
+  right:20px;
+  max-width: 200px;
+  word-wrap: break-word;
+  color:white;
+  background-color: #0087FF;
+  border: 1px solid #FFF;
+  border-radius: 5px;
+  display:flex;
+  opacity:0.85;
+}                   
+.bibliography{
+  top:17px;
+  right:0px;
+  max-width: 200px;
+  word-wrap: break-word;
+  color:white;
+  background-color: #0087FF;
+  border: 1px solid #FFF;
+  border-radius: 5px;
+}
+.biblio-buttons{
+  display:flex;
+  position: absolute;
+  bottom:-15px;
+  right:-3px;
+  align-items: center;
+}

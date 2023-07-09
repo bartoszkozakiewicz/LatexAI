@@ -29,6 +29,7 @@ function App() {
   const [review, setReview] = React.useState(false)
   const [reviewContent, setReviewContent] = React.useState("")
   const [loading, setLoading] =React.useState(false) //review loading
+  const [displayBibliography,setDisplayBibliography] = React.useState(false)//displaying bibliography
 
 
   //autocomplete
@@ -146,6 +147,8 @@ function App() {
                   reviewContent={reviewContent}
                   setReviewContent={setReviewContent}
                   setLoading={setLoading}
+                  setDisplayBibliography={setDisplayBibliography}
+                  displayBibliography = {displayBibliography}
                 />
               <Review reviewContent={reviewContent} loading={loading}/>
               </Split>
@@ -186,6 +189,8 @@ function App() {
               options={options}
               setOptions={setOptions}
               setLoading={setLoading}
+              setDisplayBibliography={setDisplayBibliography}
+              displayBibliography = {displayBibliography}
             />
           </Split>
         }
