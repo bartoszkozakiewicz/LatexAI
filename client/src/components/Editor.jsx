@@ -3,6 +3,7 @@ import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/mode-latex';
 import 'ace-builds/src-noconflict/theme-github';
 import axios from 'axios';
+import { GrammarlyEditorPlugin } from "@grammarly/editor-sdk-react";
 
 
 export default function Editor(props){

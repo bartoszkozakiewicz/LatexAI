@@ -3,6 +3,10 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from vertexai.language_models import TextGenerationModel
 import re
+from collections import Counter
+import pandas as pd 
+from nltk.tokenize import word_tokenize
+from app.config import *
 
 # to start app cd to project root directory and run:
 # uvicorn app.main:app --reload
@@ -18,16 +22,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-data_generator = None
-# count = 0
-
-
-def delete_latex_from_string(string):
-    string = '\n'.join([re.sub('^\s+', '', s) for s in string.split('\n')])
-    string = '\n'.join([s for s in string.split('\n') if not s.startswith('\\')])
-    return string
-
-
 @app.post("/api/review")
 async def read_item(info: Request):
     data = await info.json()
@@ -38,10 +32,10 @@ async def read_item(info: Request):
     # raise
 
     parameters = {
-        "temperature": 0.2,
+        "temperature": 0.0,
         "max_output_tokens": 800,
         "top_p": 0.8,
-        "top_k": 40
+        "top_k": 1
     }
     model = TextGenerationModel.from_pretrained("text-bison@001")
 
@@ -77,37 +71,31 @@ async def read_item(info: Request):
     # {delimiter} Step 5: <step 5 reasoning>
     # """
 
-    prompt1 = f"""
-    You will be given just one page of a scientific paper with text only, you won't be able to see the figures.
-    The paper includes some syntax from LaTeX, disregard this syntax and focus only on the text content of the page.
-    You must write some constructive feedback about the page following the 4 steps specified below.
+    prompt1 = f"""You will be given a single page of a scientific paper with text only, you won\'t be able to see the figures.
+        The objective of this review is to provide constructive feedback and evaluate the quality of the paper.
+        Focus on the text content and disregard any LaTeX syntax or figures.
+        Ensure that each comment includes a specific example from the text to support and illustrate the feedback.
+        Follow the provided format for each step.
 
-    Set of rules you must follow:
-    Every comment MUST have a specific example from the text that supports it and illustrates it.
-    Do not give any comments without supporting examples.
-    Make sure to include {delimiter} BEFORE the step number to separate every step.
+        You must write some constructive feedback about the page. Follow these steps to conduct a review of a page from a scientific paper, for every step check those aspects carefully, line by line:
+        Step 1: Check if the page has good style, if it reads well is clear and concise without much repetition.
+        Step 2: Check if the page has a coherent structure and logical arrangement of content.
+        Step 3: Check if the paper is written in a formal, objective, and precise language.
 
-    Remember to follow the set of rules.
+        Use the following format:
+        Step 1: <step 1 reasoning>
+        Step 2: <step 2 reasoning>
+        Step 3: <step 3 reasoning>
 
-    Follow these steps to conduct a review of a page from a scientific paper, for every step check those aspects carefully, line by line:
-
-    Step 1: Check if the page has a coherent structure and logical arrangement of content.
-    Step 2: Return list of errors in given text. They are misspellings. Return all of them, it is mandatory. Write it in given format information about the line and the column and misspelled word.
-    Step 3: Check if the author have correctly cited and referred to relevant sources. If you see any error in given line. Show information about it and add suggestions how to solve this error
-    Step 4: Check if the paper is written in a formal, objective, and precise language. Point out if there are any colloquialisms, slang expressions, and informal phrases, show exactly where error occurred.
-
-    Use the following format:
-    {delimiter} Step 1: <step 1 reasoning>
-    {delimiter} Step 2: <step 2 reasoning>
-    {delimiter} Step 3: <step 3 reasoning>
-    {delimiter} Step 4: <step 4 reasoning>
+        input: Once upon a time, there was a bunny. He was happy and run in the forest. Suddenly, he see a big carrot and wunt eat. Banny jamp, but too high and fall down. Ouch! Bunny hurt his leg. He cry and can\'t walk. Bunny feel sad and alone. Then, a kind squirrel come. Squirrel say, \"I help you, bunny!\" and take bunny to a cozy nest. Bunny feel better and say, \"Thank you, squirrel!\" Bunny and squirrel become best friends. They play and laugh in the forest every day. Bunny never forget the big carrot, but he know he have friend who care. The end.
+        output: Step 1: The page doesn't read well, it seems as if a child wrote it. 
+        Step 2: The page lacks a coherent structure and logical arrangement of content. The text appears to be a children\'s story rather than a scientific paper. There is no clear introduction, methods, results, or conclusion sections that are typically found in scientific papers.
+        Step 3: The paper is not written in a formal, objective, and precise language. It uses informal language, storytelling style, and includes dialogue between characters, which is not appropriate for a scientific paper. Scientific papers require a more formal tone and focus on presenting research findings and analysis.
+        Constructive Feedback: The content provided does not resemble a scientific paper, but rather a children\'s story. It lacks the necessary structure, formal language, and objective tone expected in scientific writing. The text needs to be revised to adhere to the conventions of scientific writing and present research findings in a clear and organized manner.
     """
 
-    responses = list()
-    messages = prompt1 + '\ninput: ' + data + '\noutput: '
-    completion = model.predict(messages, **parameters)
-
-    final_response = '\n'.join(completion.text.split(delimiter))
+    # responses = list()
+    
     # print(f"Response from Model:\n {completion.text}")
 
     # try:
@@ -117,6 +105,33 @@ async def read_item(info: Request):
 
     # print('\n\n', final_response)
     # final_response = re.sub('^\s*Step \d:\s+', '', final_response)
+
+    t = word_tokenize(data.lower())
+    cnt = Counter(t)
+
+    
+    relevant_df = pd.Series(dict(cnt)).rename('relevant_freq').to_frame()
+    relevant_df['relevant_freq'] = relevant_df['relevant_freq'] / relevant_df['relevant_freq'].sum()
+
+    m = examples_df['example_freq'].min()
+    l = len(relevant_df)
+    relevant_df = relevant_df.join(examples_df, how='left').fillna(m)
+    assert len(relevant_df) == l
+
+    relevant_df['ratio'] = (relevant_df['example_freq'] - relevant_df['relevant_freq']).abs() / relevant_df['example_freq']
+    relevant_df.sort_values(by='ratio', ascending=False)
+
+
+    abused_words = relevant_df.index[:3]
+    abused_words = ['"' + word + '"' for word in abused_words]
+    abused_words = "\nStep 1: Following words:" + ",".join(abused_words[:-1]) + 'and ' + abused_words[-1] + \
+        ' are used too frequently. Think about using synonyms.\n'
+    
+    messages = prompt1 + '\ninput: ' + data + '\noutput: ' + abused_words
+    completion = model.predict(messages, **parameters)
+
+    # final_response = '\n'.join(completion.text.split(delimiter))
+    final_response = abused_words + completion.text
 
     return {'final_response': final_response}
 
