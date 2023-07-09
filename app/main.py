@@ -2,6 +2,9 @@ from typing import Union
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from vertexai.language_models import TextGenerationModel
+
+import arxiv
+import subprocess
 import re
 
 # to start app cd to project root directory and run:
@@ -26,6 +29,27 @@ def delete_latex_from_string(string):
     string = '\n'.join([re.sub('^\s+', '', s) for s in string.split('\n')])
     string = '\n'.join([s for s in string.split('\n') if not s.startswith('\\')])
     return string
+
+@app.post("/api/bibliography")
+async def read_item(info: Request):
+        data = await info.json()
+        search = arxiv.Search(query = "dcgan", max_results = 3)
+        citations = []
+        for result in search.results():
+            index = result.pdf_url.index('pdf/')
+            doi = result.pdf_url[index + 4:]
+            summary = result.summary
+            citation = subprocess.run(['arxiv2bib', doi], stdout=subprocess.PIPE)
+            citation = citation.stdout.decode('utf-8')
+            citations.append(citation)
+        print('='*80)
+        print(result.title, doi)
+        print('---')
+        print(citation)
+
+        return {citation}
+
+
 
 
 @app.post("/api/review")
@@ -62,19 +86,22 @@ async def read_item(info: Request):
 
     Remember to follow the set of rules.
 
-    Follow these steps to conduct a review of a page from a scientific paper:
-    Step 1: Check if the page has a coherent structure and logical arrangement of content.
-    Step 2: Take note of any errors, gaps, or inconsistencies in the article, both in terms of substantive content and technical aspects.
-    Step 3: Check if the author have correctly cited and referred to relevant sources.
-    Step 4: Check if the paper is written in a formal, objective, and precise language. Point out if there are any colloquialisms, slang expressions, and informal phrases.
-    Step 5: Organize your review comments from previous steps into a numbered list.
+    Follow these steps to conduct a review of a page from a scientific paper, for every step check those aspects carefully, line by line:
 
-    Use the following format (2 sentences for each step):
+    Step 1: Check if the page has a coherent structure and logical arrangement of content.
+    Step 2: Return list of errors in given text. They are misspellings. Return all of them, it is mandatory. Write it in given format information about the line and the column and misspelled word.
+    Step 3: Check if the author have correctly cited and referred to relevant sources. If you see any error in given line. Show information about it and add suggestions how to solve this error
+    Step 4: Check if the paper is written in a formal, objective, and precise language. Point out if there are any colloquialisms, slang expressions, and informal phrases, show exactly where error occurred.
+    Step 5: Organize your review comments from previous steps into a numbered list. Which should be easy to read by human.
+
+    Use the following format:
     {delimiter} Step 1: <step 1 reasoning>
     {delimiter} Step 2: <step 2 reasoning>
     {delimiter} Step 3: <step 3 reasoning>
     {delimiter} Step 4: <step 4 reasoning>
     {delimiter} Step 5: <step 5 reasoning>
+
+  
     """
 
     responses = list()
@@ -140,4 +167,20 @@ async def read_item(info: Request):
 #     data = await info.json()
 #     return {"source": "../data/pdf/sample_string.pdf"}
 
+
+
+# Take note of any errors, gaps, or inconsistencies in the article, both in terms of substantive content and technical aspects. If you see any error in given line. Show information about it and add suggestions how to solve this error. Also look for misspelling, they might occur often. Pay extra attention to them. You must list all of the error. It is mandatory! 
+
 #
+
+
+#   Step 3: Check if the author have correctly cited and referred to relevant sources. If you see any error in given line. Show information about it and add suggestions how to solve this error
+#     Step 4: Check if the paper is written in a formal, objective, and precise language. Point out if there are any colloquialisms, slang expressions, and informal phrases, show exactly where error occurred.
+#     Step 5: Organize your review comments from previous steps into a numbered list. Which should be easy to read by human.
+
+#     Use the following format:
+#     {delimiter} Step 1: <step 1 reasoning>
+#     {delimiter} Step 2: <step 2 reasoning>
+#     {delimiter} Step 3: <step 3 reasoning>
+#     {delimiter} Step 4: <step 4 reasoning>
+#     {delimiter} Step 5: <step 5 reasoning>

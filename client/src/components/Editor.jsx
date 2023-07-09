@@ -116,7 +116,16 @@ export default function Editor(props){
         console.log(props.allCode)
         editor.focus()
       }
-  
+    async function generateBibliography(){
+      console.log("Bibliografia")
+      try {
+        const response = await axios.post('/api/bibliography', {latexText: props.currentCode.code})
+        console.log(response.data[0])
+      }
+      catch(error){
+        console.error('Searching for bibliography:',error)
+      }
+      }
     //end
 
       //Dynamic position
@@ -126,11 +135,12 @@ export default function Editor(props){
         left: cursorPos.x,
         marginLeft:'3px'
       }
-
     return (
         <div className='editor'>
             <nav className="editor-nav">
                 <p className='nav-title'>Editor</p>
+                <button className='nav-button' onClick={generateBibliography}>generateBibliography</button>
+
                 <button className='nav-button' onClick={generateReview}>{props.review ? "Hide Review" : "Review"}</button>
                 <button className='nav-button' onClick={generatePDF}>Compile</button>
             </nav>
@@ -141,6 +151,7 @@ export default function Editor(props){
                 value={props.currentCode.code}
                 name="latex-editor"
                 wrap={true}
+
                 onChange={props.updateCode}
                 wrapEnabled={true} // Włącz zawijanie tekstu
                 editorProps={{

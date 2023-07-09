@@ -8,13 +8,13 @@ export default function Review(props){
         <div className="review-container">
             <p style={{fontWeight: "600", fontSize:'20px', marginTop:'30px'}}>REVIEW</p>
             <div className="review-content">
-                {props.loading? 
+                {props.loading?
+                props.reviewContent 
+                :
                 <div className="loading-panel">
-                    <PacmanLoader color="#0087FF" size={40} />
+                    < PacmanLoader color="#0087FF" size={40} />
                 </div>
-                : props.reviewContent
                 }
-
             </div>
         </div>
     )
