@@ -21,10 +21,23 @@ export default function Editor(props){
           }
         };
 
-    function generateReview(){
+    async function generateReview(){
         props.setReview(prevReview=>!prevReview)
         console.log(props.review)
-    }
+        if (!props.review) {
+            try {
+                // props.currentCode.code is the currently active (visible) code
+                const response = await axios.post('/api/review',  { latexText: props.currentCode.code });
+                const fileURL = response.data.review;
+                console.log('Review generated successfully:', fileURL);
+                // Wyświetl link do pobrania wygenerowanego pliku PDF
+            } catch (error) {
+                console.error('Review generating PDF:', error);
+            }
+        }
+        };
+        
+        
 
     React.useEffect(() => {
         const editor = overlayRef.current.editor;
