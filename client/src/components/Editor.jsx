@@ -140,6 +140,7 @@ export default function Editor(props){
                 mode="latex"
                 value={props.currentCode.code}
                 name="latex-editor"
+                wrap={true}
                 onChange={props.updateCode}
                 wrapEnabled={true} // Włącz zawijanie tekstu
                 editorProps={{
