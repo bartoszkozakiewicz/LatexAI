@@ -113,8 +113,8 @@ async def read_item(info: Request):
     print(data)
 
     parameters = {
-        "temperature": 0.4,
-        "max_output_tokens": 40,
+        "temperature": 0.8,
+        "max_output_tokens": 10,
         "top_p": 0.8,
         "top_k": 40
     }
@@ -123,8 +123,9 @@ async def read_item(info: Request):
 
         """
         As an author preparing a paper for publication on ScienceDirect, I am writing the entire manuscript using LaTeX.
-        I want to ensure that I adhere to all LaTeX rules and include appropriate syntax in my document.
-        Please provide the LaTeX syntax to end the following sentence:
+        I want to make sure that I use LaTeX rules and include appropriate syntax in my document.
+        I put XXX mark which I want you to exchange with suggested continuation. Take under consideration words before this mark as well as after it, based on their context find the most appropriate substitute. You must use words before and after XXX mark only as an context. You cannot copy it. You should create something on your own. It is necessary.
+        Find the best possible set of words which could be used instead of XXX mark.
 
         input: {}
         output:
@@ -141,3 +142,5 @@ async def read_item(info: Request):
 # async def read_item(info: Request):
 #     data = await info.json()
 #     return {"source": "../data/pdf/sample_string.pdf"}
+
+#

@@ -80,6 +80,7 @@ export default function Editor(props){
         const editor = overlayRef.current.editor;
     
         const handleCursorPosition = (e) => {
+          props.setDisplay(false)
           const cursorPosition = editor.getCursorPosition();
           const cursorCoords = editor.renderer.textToScreenCoordinates(cursorPosition.row, cursorPosition.column);
           setCursorPos({x:cursorCoords.pageX,y:cursorCoords.pageY})
@@ -137,6 +138,7 @@ export default function Editor(props){
                 mode="latex"
                 value={props.currentCode.code}
                 name="latex-editor"
+                wrap={true}
                 onChange={props.updateCode}
                 editorProps={{
                     $blockScrolling: true, 
