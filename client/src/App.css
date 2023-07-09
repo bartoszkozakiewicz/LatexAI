@@ -126,6 +126,15 @@ html {
   margin-right: 5px;
 }
 
+.option{
+  cursor: pointer;
+  padding:3px;
+  font-size: 13px;
+  border-bottom: 0.5px solid white;
+  background-color: #0087FF;
+  border-radius: 2px;
+  opacity: 0.85;
+}
 
 /* REVIEW */
 
