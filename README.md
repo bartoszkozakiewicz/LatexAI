@@ -1,4 +1,5 @@
 # LatexAI
+
 **<p align="center">ABOUT</p>**
 
 LatexAI is powered by Google's PaLM and is focusing on helping the writing process of technical and scientific articles. During ideation we have identified 3 core functionalities that could help our users boost both effectiveness and efficiency of their work. Those functionalities are:
