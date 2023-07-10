@@ -1,0 +1,6 @@
+fastapi==0.100.0
+uvicorn==0.22.0
+shapely<2.0.0
+google-cloud-aiplatform>=1.26.0
+pip install arxiv
+pip install arxiv2bib

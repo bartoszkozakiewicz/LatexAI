@@ -32,7 +32,9 @@ async def read_item(info: Request):
         data = data['latexText']
         data = delete_latex_from_string(data)
         # data = data.replace('\n', '.')
-        data = data.split('.')[-1]
+        # data = data.split('.')[-1]
+        data = data.split()
+        data = ' '.join(data[-min(4, len(data)):])
         # data should be short (1-2 sentences)
         print('='*50, data, '='*50)
         search = arxiv.Search(query=data, max_results=3)
@@ -125,7 +127,7 @@ async def read_item(info: Request):
         output: Step 1: The page doesn't read well, it seems as if a child wrote it. 
         Step 2: The page lacks a coherent structure and logical arrangement of content. The text appears to be a children\'s story rather than a scientific paper. There is no clear introduction, methods, results, or conclusion sections that are typically found in scientific papers.
         Step 3: The paper is not written in a formal, objective, and precise language. It uses informal language, storytelling style, and includes dialogue between characters, which is not appropriate for a scientific paper. Scientific papers require a more formal tone and focus on presenting research findings and analysis.
-        Constructive Feedback: The content provided does not resemble a scientific paper, but rather a children\'s story. It lacks the necessary structure, formal language, and objective tone expected in scientific writing. The text needs to be revised to adhere to the conventions of scientific writing and present research findings in a clear and organized manner.
+        The content provided does not resemble a scientific paper, but rather a children\'s story. It lacks the necessary structure, formal language, and objective tone expected in scientific writing. The text needs to be revised to adhere to the conventions of scientific writing and present research findings in a clear and organized manner.
     """
 
     # responses = list()
@@ -155,17 +157,24 @@ async def read_item(info: Request):
     relevant_df['ratio'] = (relevant_df['example_freq'] - relevant_df['relevant_freq']).abs() / relevant_df['example_freq']
     relevant_df.sort_values(by='ratio', ascending=False)
 
+    banned_words = {'figure', '\\ref', 'fig', 'dfg'}
+    relevant_df = relevant_df.loc[relevant_df.index.str.len() > 1]
+    relevant_df = relevant_df.loc[~relevant_df.index.isin(banned_words)]
 
     abused_words = relevant_df.index[:3]
     abused_words = ['"' + word + '"' for word in abused_words]
-    abused_words = "\nStep 1: Following words:" + ",".join(abused_words[:-1]) + 'and ' + abused_words[-1] + \
+    abused_words = "\nStep 1: Following words: " + ", ".join(abused_words[:-1]) + ' and ' + abused_words[-1] + \
         ' are used too frequently. Think about using synonyms.\n'
     
-    messages = prompt1 + '\ninput: ' + data + '\noutput: ' + abused_words
+    messages = prompt1 + '\ninput: ' + data + '\noutput: '# + abused_words
     completion = model.predict(messages, **parameters)
 
     # final_response = '\n'.join(completion.text.split(delimiter))
-    final_response = abused_words + completion.text
+    # final_response = abused_words + completion.text
+    final_response = completion.text
+    final_response = final_response.split('Step')
+    final_response = [re.sub('^\s+|\s+$', '', s) for s in final_response]
+    final_response = [s for s in final_response if s != '']
 
     return {'final_response': final_response}
 
@@ -182,12 +191,26 @@ async def read_item(info: Request):
 async def read_item(info: Request):
     data = await info.json()
     data = data['latexText']
+
+    data = re.sub('\.|\n', '|', data)
+    data = data.split('|')
+    for i in range(len(data)):
+        if 'XXX' in data[i]:
+        #     temp = data[i].split('XXX')
+            # char_bef_XXX = temp[0][-1]
+            # if len(temp) > 1 and len(temp[1]) != 0:
+            #     char_after_XXX = temp[1][0]
+            # else:
+            #     char_after_XXX = ''
+            break
+    data = '\n'.join(data[i-2:i+1])
+
     print('autocomplete started')
     print(data)
 
     parameters = {
         "temperature": 0.0,
-        "max_output_tokens": 10,
+        "max_output_tokens": 4,
         "top_p": 0.8,
         "top_k": 1
     }
@@ -200,7 +223,7 @@ async def read_item(info: Request):
         and I need your assistance in suggesting the appropriate continuation based on the context.
         \Your task is to find the best fill for the XXX mark, ensuring it aligns seamlessly with the surrounding words
         and may require adding additional letters to complete the word.
-
+        Make sure you don't repeat what was already written before the XXX mark.
 
         input: """ + data + 'output: ',
 
@@ -209,7 +232,13 @@ async def read_item(info: Request):
     print(f"Response from Model: {response.text}")
 
     response = response.text
-    response = re.sub('^\n+|\n+$', '', response)
+    response = re.sub('^\n+|\n+$', '', response) + ' '
+    if response.startswith('\\'):
+         response = '\n' + response
+    # if not char_bef_XXX.isspace() and not response[0].isspace():
+    #      response = ' ' + response
+    # if not char_after_XXX.isspace() and not response[-1].isspace() and response[-1] != '.' and char_after_XXX != '.':
+    #      response = response + ' '
     return {'final_response': response}
 
 
