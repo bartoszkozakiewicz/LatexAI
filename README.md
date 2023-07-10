@@ -47,4 +47,29 @@ Further planned features are:
 <br/><br/>
 
 **<p align="center">INSTALLATION PROCESS</p>**
-...
+**1. Installing dependencies for server:** <br/><br/>
+Install dependencies from requirements.txt
+```
+pip install -r requirements.txt
+```
+For configuring server, please follow instructions here: https://cloud.google.com/docs/authentication/provide-credentials-adc
+
+**2. Installing dependencies for client:** <br/><br/>
+Install NodeJs: https://nodejs.org/en/download/package-manager <br/><br/>
+Run below:
+```
+npm i react-scripts
+```
+
+**<p align="center">RUNNING APP</p>**
+**1. Start server:** <br/><br/>
+From root of the GH project run command:
+```
+uvicorn app.main:app
+```
+
+**1. Start server:** <br/><br/>
+From root/client run command:
+```
+npm start
+```
