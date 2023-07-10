@@ -68,7 +68,7 @@ From root of the GH project run command:
 uvicorn app.main:app
 ```
 
-**1. Start server:** <br/><br/>
+**2. Start client:** <br/><br/>
 From root/client run command:
 ```
 npm start
