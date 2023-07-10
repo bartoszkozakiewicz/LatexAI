@@ -186,12 +186,16 @@ html {
 .bibliography{
   top:17px;
   right:0px;
-  max-width: 200px;
+  max-width: 500px;
   word-wrap: break-word;
   color:white;
   background-color: #0087FF;
   border: 1px solid #FFF;
   border-radius: 5px;
+  padding: 8px 8px 8px 12px;
+  text-align:left;
+  line-height: 1.5;
+
 }
 .biblio-buttons{
   display:flex;
@@ -199,4 +203,13 @@ html {
   bottom:-15px;
   right:-3px;
   align-items: center;
+}
+.abstract{
+  font-family: 'Dancing Script', cursive;
+  font-size: 18px;
+  text-align: center;
+  margin-bottom: 5px;
+  margin-top:5px;
+  font-weight:550;
+  
 }
