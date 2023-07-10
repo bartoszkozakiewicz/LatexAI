@@ -1,8 +1,3 @@
-# import os
-# import dotenv
-# import cohere
-# from stability_sdk import client
-# import re
 
 from google.cloud import aiplatform
 import vertexai
