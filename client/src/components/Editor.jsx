@@ -13,6 +13,7 @@ export default function Editor(props){
     const [bibliography,setBibliography] = React.useState("")
     const [citation,setCitation] = React.useState("")
     const [doi,setDoi] = React.useState("")
+    const [temp,setTemp] = React.useState(0)
  
 
     async function generatePDF(){
@@ -91,10 +92,10 @@ export default function Editor(props){
               )
             );
 
-            if (props.allCode.some(code => code.name === "bibliography")) {
+            if (props.allCode.some(code => code.name === "bibliography.bib")) {
               props.setAllCode(prevAllCode =>
                 prevAllCode.map(ele =>
-                  ele.name === "bibliography"
+                  ele.name === "bibliography.bib"
                     ? {
                         ...ele,
                         code: ele.code +"\n\n" + citation
@@ -108,7 +109,7 @@ export default function Editor(props){
                 {
                   id: nanoid(),
                   code: citation, // {bibliography}
-                  name: "bibliography",
+                  name: "bibliography.bib",
                   isEdit: false
                 }
               ]);
@@ -124,7 +125,7 @@ export default function Editor(props){
 
           //Function to propose autocompletion:
     async function proposeChanges(){
-
+      
         const editor = overlayRef.current.editor;
         const cursorPosition = editor.getCursorPosition();
         const index = editor.session.getDocument().positionToIndex(cursorPosition, 0);
@@ -154,7 +155,7 @@ export default function Editor(props){
     React.useEffect(()=>{
         const timeoutId = setTimeout(()=> {
           proposeChanges()
-        }, 100)
+        }, 1000)
         return ()=>clearTimeout(timeoutId)
       },[props.currentCode.code])
         

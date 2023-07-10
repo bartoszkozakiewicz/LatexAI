@@ -14,14 +14,14 @@ function App() {
   const [allCode, setAllCode] = useState([
     {
       id: nanoid(), 
-      code: "\\documentclass{article} \n\n \\end{document}",
-      name: "example code 1",
+      code: "\\documentclass{article}\n\n\\begin{document}\n\n\\bibliography{bibliography.bib}\n\n\\end{document}",
+      name: "main.tex",
       isEdit:false
     },
     {
       id: nanoid(), 
-      code: "\\documentclass{article} \n\n \\end{document}",
-      name: "example code 2",
+      code: "",
+      name: "bibliography.bib",
       isEdit:false
     }
   ])
