@@ -27,7 +27,7 @@ function App() {
   ])
   const [currentCodeId, setCurrentCodeId] = useState(allCode[0] && allCode[0].id || '')
   const [review, setReview] = React.useState(false)
-  const [reviewContent, setReviewContent] = React.useState("")
+  const [reviewContent, setReviewContent] = React.useState([])
   const [loading, setLoading] =React.useState(false) //review loading
   const [displayBibliography,setDisplayBibliography] = React.useState(false)//displaying bibliography
 
@@ -150,10 +150,15 @@ function App() {
                   setDisplayBibliography={setDisplayBibliography}
                   displayBibliography = {displayBibliography}
                 />
-              <Review reviewContent={reviewContent} loading={loading}/>
+              <Review reviewContent={reviewContent.map(elem => {
+                    return (
+                        <span>{elem}<br></br><br></br></span>
+                    )
+                  })} loading={loading}/>
               </Split>
 
           </Split>
+        
 
         : 
           <Split

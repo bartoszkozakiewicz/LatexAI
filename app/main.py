@@ -155,10 +155,13 @@ async def read_item(info: Request):
     relevant_df['ratio'] = (relevant_df['example_freq'] - relevant_df['relevant_freq']).abs() / relevant_df['example_freq']
     relevant_df.sort_values(by='ratio', ascending=False)
 
+    banned_words = {'figure', '\\ref', 'fig', 'dfg'}
+    relevant_df = relevant_df.loc[relevant_df.index.str.len() > 1]
+    relevant_df = relevant_df.loc[~relevant_df.index.isin(banned_words)]
 
     abused_words = relevant_df.index[:3]
     abused_words = ['"' + word + '"' for word in abused_words]
-    abused_words = "\nStep 1: Following words:" + ",".join(abused_words[:-1]) + 'and ' + abused_words[-1] + \
+    abused_words = "\nStep 1: Following words: " + ", ".join(abused_words[:-1]) + ' and ' + abused_words[-1] + \
         ' are used too frequently. Think about using synonyms.\n'
     
     messages = prompt1 + '\ninput: ' + data + '\noutput: ' + abused_words
@@ -166,6 +169,9 @@ async def read_item(info: Request):
 
     # final_response = '\n'.join(completion.text.split(delimiter))
     final_response = abused_words + completion.text
+    final_response = final_response.split('Step')
+    final_response = [re.sub('^\s+|\s+$', '', s) for s in final_response]
+    final_response = [s for s in final_response if s != '']
 
     return {'final_response': final_response}
 

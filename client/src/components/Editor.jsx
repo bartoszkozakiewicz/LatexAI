@@ -34,9 +34,10 @@ export default function Editor(props){
             try {
                 // props.currentCode.code is the currently active (visible) code
                 const response = await axios.post('/api/review',  { latexText: props.currentCode.code });
-                const fileURL = response.data.review;
+                // const fileURL = response.data.review;
+                console.log(response.data.final_response)
                 props.setReviewContent(response.data.final_response)
-                console.log('Review generated successfully:', fileURL);
+                // console.log('Review generated successfully:', fileURL);
                 props.setLoading(true)
                 // Wyświetl link do pobrania wygenerowanego pliku PDF
             } catch (error) {
@@ -228,17 +229,8 @@ export default function Editor(props){
               <div className="biblio-container">
                 <div className="bibliography" style={{position:'absolute'}}>
                   <p className="abstract" >ABSTRACT</p>
-                  Training generative adversarial networks (GAN) using too little data typically leads
-                  to discriminator overfitting, causing training to diverge. We propose an adaptive
-                  discriminator augmentation mechanism that significantly stabilizes training in
-                  limited data regimes. The approach does not require changes to loss functions
-                  or network architectures, and is applicable both when training from scratch and
-                  when fine-tuning an existing GAN on another dataset. We demonstrate, on several
-                  datasets, that good results are now possible using only a few thousand training
-                  images, often matching StyleGAN2 results with an order of magnitude fewer
-                  images. We expect this to open up new application domains for GANs. We also
-                  find that the widely used CIFAR-10 is, in fact, a limited data benchmark, and
-improve the record FID from 5.59 to 2.42.</div> {/* {bibliography} */}
+                    {bibliography}
+                  </div> {/* {bibliography} */}
                 <div className="biblio-buttons">
                   <button className='nav-button' onClick={addBibliography}>Add</button>
                   <button className='nav-button' onClick={ignoreBibliography}>Ignore</button>
